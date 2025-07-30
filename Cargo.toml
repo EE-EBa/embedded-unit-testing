@@ -1,0 +1,18 @@
+[package]
+name = "test2"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cortex-m-rt = "0.7.5"
+panic-halt = "1.0.0"
+rtt-target = "0.5"
+cortex-m = {version = "0.7.7",features = ["critical-section-single-core"]}
+stm32g4xx-hal = {git = "https://github.com/stm32-rs/stm32g4xx-hal.git",features=["stm32g431","rt"]}
+linked_list_allocator = "0.10"
+volatile-register = "0.2.2"
+[[bin]]
+name = "test2"
+test = false
+bench = false
+
