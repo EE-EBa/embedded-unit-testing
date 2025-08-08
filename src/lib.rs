@@ -1,13 +1,11 @@
-#![no_std]
 #![no_main]
-#![allow(dead_code)]
+#![no_std]
 
-extern crate alloc;
+use defmt_rtt as _;
 
-use core::panic::PanicInfo;
 use core::ptr::addr_of_mut;
-use cortex_m_rt::entry;
-use rtt_target::{rprintln, rtt_init_print};
+use stm32g4xx_hal as _;
+extern crate alloc;
 
 use linked_list_allocator::LockedHeap;
 
@@ -17,26 +15,29 @@ static ALLOCATOR: LockedHeap = LockedHeap::empty();
 // Define heap memory as a static array
 static mut HEAP: [u8; 8192] = [0; 8192]; // 8KB heap
 
-use stm32g4xx_hal::pac;
-
 pub fn init_heap() {
     unsafe {
         ALLOCATOR.lock().init(addr_of_mut!(HEAP) as *mut u8, 8192);
     }
 }
 
+mod json_macro;
+use core::panic::PanicInfo;
+pub use json_macro::*;
+
+// Standard panic handler required for no_std
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
-    loop {}
+    cortex_m::asm::udf()
 }
 
-#[entry]
-fn main() -> ! {
-    init_heap();
-    let _rb = pac::ADC1::ptr(); // `pac` 是生成的模块
-    rtt_init_print!();
+#[cfg(test)]
+#[defmt_test::tests]
+mod unit_tests {
+    use defmt::assert;
 
-    loop {
-        rprintln!("this is infinite loop.");
+    #[test]
+    fn it_works() {
+        assert!(true);
     }
 }
