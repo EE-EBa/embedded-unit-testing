@@ -1,33 +1,30 @@
 [package]
-name = "test2"
+name = "embedded-unit-test"
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
-cortex-m-rt = "0.7.5"
-panic-halt = "1.0.0"
-rtt-target = "0.5"
-cortex-m = {version = "0.7.7",features = ["critical-section-single-core"]}
-stm32g4xx-hal = {git = "https://github.com/stm32-rs/stm32g4xx-hal.git",features=["stm32g431","rt"]}
-linked_list_allocator = "0.10"
-volatile-register = "0.2.2"
-defmt-rtt = "0.4"
-defmt = "1.0.1"
-cortex-m-semihosting = "0.5.0"
-panic-probe = { version = "1.0", features = ["print-defmt"] }
-
-[dev-dependencies]
-defmt-test = "0.4.0"
 [[bin]]
-name = "test2"
-bench = false
+name = "embedded-unit-test"
+bench  = false
 test = false
 
-[lib]
-harness = false # This is necessary to unit test in embedded dev!
-
-
-
 [[test]]
-name = "macro_custom" # tests/macro_custom.rs
 harness = false
+name = "test_demo"
+
+[dependencies]
+cortex-m = { version = "0.7.7", features = ["critical-section-single-core"] }
+cortex-m-rt = "0.7.5"
+# stm32g4xx-hal = {git = "https://github.com/stm32-rs/stm32g4xx-hal.git",features=["stm32g431","rt"]}
+fugit = "0.3.7"
+panic-halt = "1.0.0"
+
+embedded-test = { version = "0.6.2" } #不要使用0.7.0-alpha.1这个版本，否则无法正常使用
+log = { version = "0.4.20", optional = true }
+defmt = { version = "1", optional = true }
+rtt-target = { version="0.6.1", optional= true }
+[features]
+default = ["log"]
+log = ["dep:log", "dep:rtt-target", "rtt-target/log", "embedded-test/log"]
+defmt = ["dep:defmt", "dep:rtt-target", "rtt-target/defmt", "embedded-test/defmt"]
+

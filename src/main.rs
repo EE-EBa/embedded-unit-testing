@@ -2,41 +2,14 @@
 #![no_main]
 #![allow(dead_code)]
 
-extern crate alloc;
-
-use core::panic::PanicInfo;
-use core::ptr::addr_of_mut;
 use cortex_m_rt::entry;
-use rtt_target::{rprintln, rtt_init_print};
+use panic_halt as _;/* 这个是必须的 */
 
-use linked_list_allocator::LockedHeap;
 
-#[global_allocator]
-static ALLOCATOR: LockedHeap = LockedHeap::empty();
-
-// Define heap memory as a static array
-static mut HEAP: [u8; 8192] = [0; 8192]; // 8KB heap
-
-use stm32g4xx_hal::pac;
-
-pub fn init_heap() {
-    unsafe {
-        ALLOCATOR.lock().init(addr_of_mut!(HEAP) as *mut u8, 8192);
-    }
-}
-
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
-    loop {}
-}
 
 #[entry]
 fn main() -> ! {
-    init_heap();
-    let _rb = pac::ADC1::ptr(); // `pac` 是生成的模块
-    rtt_init_print!();
-
-    loop {
-        rprintln!("this is infinite loop.");
-    }
+    loop {}
 }
+
+
